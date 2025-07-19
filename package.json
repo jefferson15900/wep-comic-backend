@@ -6,7 +6,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "nodemon src/server.ts",
-    "cleanup": "ts-node prisma/scripts/cleanupNotifications.ts",
+    "cleanup": "ts-node src/scripts/cleanupNotifications.ts",
     "postinstall": "npx prisma generate"
   },
   "keywords": [],
