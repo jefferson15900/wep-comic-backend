@@ -1,0 +1,177 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// --- ENUMS ---
+enum Role {
+  USER
+  ADMIN
+  MODERATOR 
+}
+
+enum ContentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  ARCHIVED 
+}
+
+// NUEVO ENUM para las propuestas de edición
+enum ProposalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum NotificationType {
+  PROPOSAL_APPROVED
+  PROPOSAL_REJECTED
+  NEW_CHAPTER
+
+}
+
+enum ContentRating {
+  SFW   // Safe For Work (Familiar)
+  NSFW  // Not Safe For Work (+18)
+}
+
+// --- MODELOS ---
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  avatarUrl       String? 
+  bio             String? 
+  favoritesArePublic Boolean  @default(true) 
+
+  favorites Favorite[]
+  mangas    Manga[]       @relation("UploadedManga")     
+  editedMangas    Manga[]    @relation("LastEditedManga")    
+  editedChapters  Chapter[]  @relation("LastEditedChapter")   
+  proposals EditProposal[] @relation("UserProposals")
+  lockedMangas Manga[] @relation("LockedMangas")
+
+  notifications Notification[] 
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  comicId   String // ID del cómic/manga de MangaDex o de nuestra DB
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, comicId])
+}
+
+model Manga {
+  id          String    @id @default(cuid())
+  title       String
+  author      String
+  synopsis    String
+  coverUrl    String
+  status      ContentStatus @default(PENDING)
+  rejectionReason  String?      
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  uploaderId  String
+  uploader    User      @relation("UploadedManga", fields: [uploaderId], references: [id], onDelete: Cascade)
+
+  lastEditedById  String?
+  lastEditedBy    User?     @relation("LastEditedManga", fields: [lastEditedById], references: [id], onUpdate: NoAction, onDelete: SetNull)
+
+  chapters    Chapter[]
+  editProposals EditProposal[]
+
+  lockedById String?    
+  lockedAt   DateTime? 
+
+  contentRating    ContentRating @default(SFW)
+  originalLanguage String        @default("es")  
+
+  lockedBy   User?      @relation("LockedMangas", fields: [lockedById], references: [id], onDelete: SetNull, onUpdate: NoAction)
+}
+
+model Chapter {
+  id            String   @id @default(cuid())
+  chapterNumber Float
+  title         String?
+  justification String? 
+  language      String   @default("en")
+  status        ContentStatus @default(PENDING)
+  rejectionReason  String?   
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime? @updatedAt
+
+  mangaId       String
+  manga         Manga    @relation(fields: [mangaId], references: [id], onDelete: Cascade)
+
+  lastEditedById  String?
+  lastEditedBy    User?     @relation("LastEditedChapter", fields: [lastEditedById], references: [id], onUpdate: NoAction, onDelete: SetNull)
+
+  pages         Page[]
+
+}
+
+model Page {
+  id            String   @id @default(cuid())
+  pageNumber    Int
+  imageUrl      String   
+  chapterId     String
+  chapter       Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  @@unique([chapterId, pageNumber])
+}
+
+// --- NUEVO MODELO PARA LAS PROPUESTAS DE EDICIÓN ---
+model EditProposal {
+  id            String         @id @default(cuid())
+  justification String
+  
+  // Campos propuestos (opcionales)
+  title         String?
+  author        String?
+  synopsis      String?
+  coverUrl      String?
+  status        ProposalStatus @default(PENDING)
+  rejectionReason  String?      
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  // Relaciones
+  mangaId       String
+  manga         Manga          @relation(fields: [mangaId], references: [id], onDelete: Cascade)
+
+  proposerId    String
+  proposer      User           @relation("UserProposals", fields: [proposerId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  message   String   // El texto de la notificación. Ej: "Tu propuesta para 'Manga X' fue aprobada."
+  link      String   // A dónde debe llevar el clic. Ej: "/comic/manga-id"
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  type      NotificationType // El tipo de notificación
+
+  // A quién pertenece esta notificación
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId]) // Indexamos por userId para búsquedas rápidas
+}
