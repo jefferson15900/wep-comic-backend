@@ -24,7 +24,7 @@ const PORT = process.env.PORT || 4000;
 // Define los orígenes (URLs) que tienen permiso para acceder a tu API
 const allowedOrigins = [
   'http://localhost:5173', // Permite el desarrollo local del frontend
-  // Cuando despliegues tu frontend, añade su URL aquí. Ejemplo:
+  'https://wepcomic-jeffersons-projects-a3b9005f.vercel.app',
   // 'https://tu-wepcomic.vercel.app', 
   // 'https://www.tu-dominio.com'
 ];
