@@ -14,6 +14,7 @@ import mangaRouter from './api/manga/manga.router';
 import communityRouter from './api/community/community.router';
 import adminRouter from './api/admin/admin.router'; 
 import notificationRouter from './api/notifications/notification.router';
+import mangadexRouter from './api/mangadex/mangadex.router';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -23,9 +24,8 @@ const PORT = process.env.PORT || 4000;
 // --- ¡NUEVA CONFIGURACIÓN DE CORS PARA PRODUCCIÓN! ---
 // Define los orígenes (URLs) que tienen permiso para acceder a tu API
 const allowedOrigins = [
-  'http://localhost:5173', // Permite el desarrollo local del frontend
+  'http://localhost:5173', 
   'https://wepcomic-jeffersons-projects-a3b9005f.vercel.app',
-  // 'https://tu-wepcomic.vercel.app', 
   // 'https://www.tu-dominio.com'
 ];
 
@@ -60,6 +60,7 @@ app.use('/mangas', mangaRouter);
 app.use('/community', communityRouter); 
 app.use('/admin', adminRouter); 
 app.use('/notifications', notificationRouter);
+app.use('/mangadex', mangadexRouter);
 
 // --- Middlewares de Manejo de Errores ---
 app.use((req: Request, res: Response, next: NextFunction) => {
