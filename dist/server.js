@@ -16,30 +16,28 @@ const manga_router_1 = __importDefault(require("./api/manga/manga.router"));
 const community_router_1 = __importDefault(require("./api/community/community.router"));
 const admin_router_1 = __importDefault(require("./api/admin/admin.router"));
 const notification_router_1 = __importDefault(require("./api/notifications/notification.router"));
+const mangadex_router_1 = __importDefault(require("./api/mangadex/mangadex.router"));
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 4000;
 // --- Middlewares Esenciales ---
 // --- ¡NUEVA CONFIGURACIÓN DE CORS PARA PRODUCCIÓN! ---
 // Define los orígenes (URLs) que tienen permiso para acceder a tu API
 const allowedOrigins = [
-    'http://localhost:5173', // Permite el desarrollo local del frontend
-    // Cuando despliegues tu frontend, añade su URL aquí. Ejemplo:
-    // 'https://tu-wepcomic.vercel.app', 
-    // 'https://www.tu-dominio.com'
+    'http://localhost:5173',
+    'https://wepcomic.vercel.app',
+    new RegExp('^https://wepcomic-.*-jeffersons-projects-a3b9005f\\.vercel\\.app$')
 ];
 const corsOptions = {
     origin: (origin, callback) => {
-        // Si la petición no tiene origen (como Postman) o si el origen está en nuestra lista blanca, la permitimos.
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (!origin || allowedOrigins.some(o => typeof o === 'string' ? o === origin : o.test(origin))) {
             callback(null, true);
         }
         else {
-            // Si el origen no está permitido, la rechazamos.
             callback(new Error('No permitido por la política de CORS'));
         }
     },
 };
-app.use((0, cors_1.default)(corsOptions)); // Usa las nuevas opciones de CORS
+app.use((0, cors_1.default)(corsOptions));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 // --- Rutas ---
@@ -54,6 +52,7 @@ app.use('/mangas', manga_router_1.default);
 app.use('/community', community_router_1.default);
 app.use('/admin', admin_router_1.default);
 app.use('/notifications', notification_router_1.default);
+app.use('/mangadex', mangadex_router_1.default);
 // --- Middlewares de Manejo de Errores ---
 app.use((req, res, next) => {
     const error = new Error(`Ruta no encontrada - ${req.originalUrl}`);

@@ -17,6 +17,6 @@ router.get('/at-home/server/:chapterId', proxyToMangaDex);
 
 // --- ¡RUTA ESPECÍFICA PARA IMÁGENES! ---
 // Esta ruta ahora usa el nuevo controlador 'proxyMangaDexImage'
-router.get('/covers/:mangaId/:fileName', proxyMangaDexImage);
+router.get('/data-saver/:hash/:fileName', proxyMangaDexImage);
 
 export default router;
