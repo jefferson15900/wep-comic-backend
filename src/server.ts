@@ -23,26 +23,23 @@ const PORT = process.env.PORT || 4000;
 
 // --- ¡NUEVA CONFIGURACIÓN DE CORS PARA PRODUCCIÓN! ---
 // Define los orígenes (URLs) que tienen permiso para acceder a tu API
-const allowedOrigins = [
-  'http://localhost:5173', 
-  'https://wepcomic.vercel.app', 
-  // 'https://www.tu-dominio.com'
+const allowedOrigins: (string | RegExp)[] = [
+  'http://localhost:5173',
+  'https://wepcomic.vercel.app',
+  new RegExp('^https://wepcomic-.*-jeffersons-projects-a3b9005f\\.vercel\\.app$')
 ];
 
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {
-    // Si la petición no tiene origen (como Postman) o si el origen está en nuestra lista blanca, la permitimos.
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.some(o => typeof o === 'string' ? o === origin : o.test(origin))) {
       callback(null, true);
     } else {
-      // Si el origen no está permitido, la rechazamos.
       callback(new Error('No permitido por la política de CORS'));
     }
   },
 };
 
-app.use(cors(corsOptions)); // Usa las nuevas opciones de CORS
-
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
