@@ -3,6 +3,7 @@
 import { Router } from 'express';
 import { getMangas, getMangaById, getChapterPages } from './manga.controller';
 import { getUserIfLoggedIn } from '../middleware/user.middleware';
+import commentsRouter from '../comments/comments.router';
 
 const router = Router();
 
@@ -16,5 +17,8 @@ router.get('/:mangaId', getUserIfLoggedIn, getMangaById);
 
 // Obtener las páginas de un capítulo específico (público para los aprobados)
 router.get('/:mangaId/chapters/:chapterId/pages', getUserIfLoggedIn, getChapterPages);
+
+// enviada al 'commentsRouter' para que la maneje
+router.use('/:mangaId/comments', commentsRouter);
 
 export default router;

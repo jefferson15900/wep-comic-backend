@@ -65,6 +65,7 @@ model User {
   lockedMangas Manga[] @relation("LockedMangas")
 
   notifications Notification[] 
+  comments      Comment[]
 }
 
 model Favorite {
@@ -104,6 +105,7 @@ model Manga {
   originalLanguage String        @default("es")  
 
   lockedBy   User?      @relation("LockedMangas", fields: [lockedById], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  comments   Comment[]
 }
 
 model Chapter {
@@ -174,4 +176,21 @@ model Notification {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   @@index([userId]) // Indexamos por userId para búsquedas rápidas
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  text      String   
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relación con el Usuario que escribió el comentario
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Relación con el Manga donde se escribió el comentario
+  mangaId String
+  manga   Manga  @relation(fields: [mangaId], references: [id], onDelete: Cascade)
+
+  @@index([mangaId, createdAt])
 }

@@ -36,17 +36,15 @@ exports.proxyToMangaDex = (0, express_async_handler_1.default)(async (req, res) 
  */
 exports.proxyMangaDexImage = (0, express_async_handler_1.default)(async (req, res) => {
     try {
-        // Construimos la URL de la imagen usando los parámetros de la ruta
-        const imageUrl = `${MANGADEX_UPLOADS_URL}/covers/${req.params.mangaId}/${req.params.fileName}`;
-        // Hacemos la petición a MangaDex pidiendo la respuesta como un 'stream'
+        // Usamos req.path para reconstruir la ruta de la imagen dinámicamente.
+        // Ej: si la petición es a /mangadex/covers/id/file.jpg, req.path será /covers/id/file.jpg
+        const imageUrl = `${MANGADEX_UPLOADS_URL}${req.path}`;
         const response = await (0, axios_1.default)({
             method: 'get',
             url: imageUrl,
             responseType: 'stream'
         });
-        // Le decimos al navegador del usuario qué tipo de imagen estamos enviando
         res.setHeader('Content-Type', response.headers['content-type']);
-        // "Entubamos" el stream de la imagen desde MangaDex directamente a la respuesta para el usuario
         response.data.pipe(res);
     }
     catch (error) {
