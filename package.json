@@ -14,7 +14,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@prisma/client": "^6.10.1",
+    "@prisma/client": "^6.12.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
@@ -29,6 +29,7 @@
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.1",
     "multer-storage-cloudinary": "^4.0.0",
+    "pg": "^8.16.3",
     "prisma": "^6.10.1",
     "qs": "^6.14.0",
     "ts-node": "^10.9.2",
