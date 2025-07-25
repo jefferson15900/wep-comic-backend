@@ -25,7 +25,7 @@ const PORT = process.env.PORT || 4000;
 // Define los orígenes (URLs) que tienen permiso para acceder a tu API
 const allowedOrigins: (string | RegExp)[] = [
   'http://localhost:5173',
-  'https://wepcomic.vercel.app',
+   'https://mangawebhaven.vercel.app',
   new RegExp('^https://wepcomic-.*-jeffersons-projects-a3b9005f\\.vercel\\.app$')
 ];
 
