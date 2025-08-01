@@ -14,7 +14,7 @@ export const moderatorOrAdminOnly = (req: AuthRequest, res: Response, next: Next
     next();
   } else {
     // Si no, se le deniega el acceso.
-    res.status(403); // 403 Forbidden
+    res.status(403); // 403
     throw new Error('Acceso denegado. Se requiere rol de moderador o administrador.');
   }
 };
